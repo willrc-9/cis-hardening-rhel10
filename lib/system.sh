@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
-get_ubuntu_version() {
+get_os_version() {
 	source /etc/os-release
 	echo "${VERSION_ID:-}"
 }
 
-is_ubuntu() {
-	source /etc/os-release
-	[[ "${ID:-}" == "ubuntu" ]]
+get_os_name() {
+	if [[ -f /etc/os-release ]]; then
+		grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '"'
+	elif [[ -f /etc/rehat-release ]]; then
+		cat /etc/redhat-release
+	else
+		echo "Unknown Enterprise Linux Distribution"
+	fi
 }
 
 get_hostname() {
@@ -29,17 +34,25 @@ module_exists() {
 }
 
 is_pkg_installed() {
-	local pkg="$1"
-	dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed"
+	rpm -q "$1" >/dev/null 2>&1
 }
 
 ask_yes_no() {
-	while true; do
-		read -r -p "$1 [y/n]: " response
-		case "${response,,}" in
-			y|yes) return 0 ;; # 0 means true/success in bash
-            		n|no) return 1 ;;  # 1 means false/failure
-            		*) echo "Please enter y or n." ;;
-        	esac
-    	done
+	local prompt="$1"
+	
+	if [[ "$AUTO_YES" == "true" ]]; then
+		log_info "[AUTO-APPROVED] $prompt"
+		return 0
+	fi
+	
+
+	read -r -p "$prompt [y/N]: " response
+	case "$response" in
+		[yY][eE][sS]|[yY])
+			return 0
+			;;
+		*)
+			return 1
+			;;
+	esac
 }

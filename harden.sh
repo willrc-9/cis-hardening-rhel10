@@ -9,6 +9,7 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 MODE="${DEFAULT_MODE:-audit}"
 ACTION="all"
 TARGET_SECTION=""
+export AUTO_YES="false" # default
 
 # Load libraries
 source "$SCRIPT_DIR/lib/logging.sh"
@@ -61,6 +62,9 @@ parse_args() {
 			--apply)
 				MODE="apply"
 				;;
+			-y|--yes|--auto)
+				export AUTO_YES="true"
+				;;
 			--all)
 				ACTION="all"
 				;;
@@ -112,7 +116,7 @@ main() {
 	parse_args "$@"
 
 	log_info "Host: $(get_hostname)"
-	log_info "Ubuntu version: $(get_ubuntu_version)"
+	log_info "OS version: $(get_os_version)"
 	log_info "Mode: $MODE"
 
 	case "$ACTION" in
