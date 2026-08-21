@@ -1,6 +1,6 @@
-# CIS Hardening Scripts for Ubuntu 24.04
+# CIS Hardening Scripts for RHEL 10
 
-A hardening script for Ubuntu 24.04 based on the CIS Ubuntu 24.04 v2.0.0 Level 1 Server benchmark.
+A hardening script for RHEL 10 based on the CIS RHEL 10 v 1.0.1 benchmark.
 
 ## Usage
 
